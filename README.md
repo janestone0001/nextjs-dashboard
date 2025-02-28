@@ -58,13 +58,9 @@ npm start
 
 ## Contributing
 
-We welcome contributions! Please follow these steps to contribute:
+We welcome contributions!
 
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Make your changes and commit them.
-4. Push your changes to your fork.
-5. Create a pull request.
+Please read the [contributing guidelines](CONTRIBUTING.md) for more details.
 
 ## License
 
