@@ -15,7 +15,7 @@
     "migration:generate": "cd db && npm run migration:generate",
     "migrate": "cd db && npm run migrate",
     "migration:revert": "cd db && npm run migration:revert",
-    "ngrok": "ngrok http http://localhost:3000"
+    "ngrok": "ngrok http 3000"
   },
   "dependencies": {
     "@auth/typeorm-adapter": "^2.8.0",
