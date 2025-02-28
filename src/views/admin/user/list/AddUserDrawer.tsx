@@ -248,7 +248,7 @@ const AddUserDrawer = (props: Props) => {
                   <InputAdornment position='end'>
                     <IconButton
                       edge='end'
-                      onClick={() => setPassword(generatePassword(6))}
+                      onClick={() => setPassword(generatePassword(16))}
                       onMouseDown={e => e.preventDefault()}
                     >
                       <i className={'tabler-refresh'} />
@@ -272,7 +272,7 @@ const AddUserDrawer = (props: Props) => {
                 {...(errors.role && { error: true, helperText: 'This field is required.' })}
               >
                 <MenuItem value='admin'>Admin</MenuItem>
-                <MenuItem value='auth'>Author</MenuItem>
+                <MenuItem value='owner'>Owner</MenuItem>
                 <MenuItem value='user'>User</MenuItem>
               </CustomTextField>
             )}

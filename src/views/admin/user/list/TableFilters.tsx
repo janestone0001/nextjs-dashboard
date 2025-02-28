@@ -45,7 +45,7 @@ const TableFilters = ({ setData, tableData }: { setData: (data: UsersType[]) => 
           >
             <MenuItem value=''>Select Role</MenuItem>
             <MenuItem value='admin'>Admin</MenuItem>
-            <MenuItem value='auth'>Author</MenuItem>
+            <MenuItem value='owner'>Owner</MenuItem>
             <MenuItem value='user'>User</MenuItem>
           </CustomTextField>
         </Grid>

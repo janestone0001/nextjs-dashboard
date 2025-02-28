@@ -11,6 +11,13 @@ import { User } from '@db/entities/user.entity'
 
 
 import { authOptions } from '@/libs/auth'
+import type { DeviceTypes } from '@/types/admin/deviceTypes'
+
+export const isOwnDevice = async (id: number) => {
+  const devices = await getOwnDeviceData()
+
+  return devices.find((device: DeviceTypes) => device.id === id)
+}
 
 export const getOwnDeviceData = async () => {
   const session = await getServerSession(authOptions);
@@ -41,5 +48,45 @@ export const getOwnDeviceData = async () => {
     }
   } catch (e: any) {
     throw new Error(e.message)
+  }
+}
+
+export const getMobilesStatus = async () => {
+  try {
+    const controller = new AbortController();
+
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 5 seconds timeout
+
+    const res = await fetch("http://188.26.201.61:9912/api", {
+      method: 'POST',
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        "data": {},
+        "fun": "get_device_list",
+        "msgid": 0
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: "Server not connected",
+      }
+    }
+
+    const devicesStatus = await res.json();
+
+    return {
+      ...devicesStatus,
+      success: true,
+    };
+  } catch (e: any) {
+    return {
+      success: false,
+      message: "Server not connected",
+    }
   }
 }

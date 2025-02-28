@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
 export enum UserRole {
-  AUTH = "auth",
+  OWNER = "owner",
   ADMIN = "admin",
   USER = "user",
 }

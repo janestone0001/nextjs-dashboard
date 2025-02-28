@@ -95,22 +95,18 @@ const HorizontalMenu = ({ dictionary, role }: { dictionary: Awaited<ReturnType<t
           icon={<i className='tabler-user' />}
           suffix={<CustomChip label='5' size='small' color='error' round='true' />}
         >
-          <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].advancedSearch}</MenuItem>
+          <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].myDevice}</MenuItem>
           <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].subscription}</MenuItem>
-          <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].support}</MenuItem>
-          <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].privacyPolicy}</MenuItem>
           <SubMenu label={dictionary['navigation'].userAccount}>
           </SubMenu>
         </SubMenu>
         {
           role === 'admin' && (
             <>
-              <SubMenu label={dictionary['navigation'].manageDevice} icon={<i className='tabler-device' />}>
-                <MenuItem href={`/${locale}/admin/devices/list`}>{dictionary['navigation'].manageDevice}</MenuItem>
-              </SubMenu>
               <SubMenu label={dictionary['navigation'].administrator} icon={<i className='tabler-lock' />}>
                 <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].settings}</MenuItem>
                 <MenuItem href={`/${locale}/admin/user/list`}>{dictionary['navigation'].userManagement}</MenuItem>
+                <MenuItem href={`/${locale}/admin/devices/list`}>{dictionary['navigation'].manageDevice}</MenuItem>
                 <MenuItem href={`/${locale}/#`}>
                   {dictionary['navigation'].affiliateSettings}
                 </MenuItem>

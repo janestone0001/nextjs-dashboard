@@ -1,11 +1,11 @@
 {
   "navigation": {
     "dashboard": "Dashboard",
-    "advancedSearch": "Advanced Search",
+    "myDevice": "My Device",
     "subscription": "SubScription",
     "support": "Support",
     "privacyPolicy": "Privacy Policy",
-    "userAccount": "User Account",
+    "userAccount": "My profile",
     "mamageDevices": "MANAGE DEVICES",
     "manageDevice": "Manage Devices",
     "adminPanel": "ADMIN PANEL",

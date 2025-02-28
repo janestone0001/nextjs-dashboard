@@ -128,7 +128,7 @@ const DebouncedInput = ({
 // Vars
 const userRoleObj: UserRoleType = {
   admin: { icon: 'tabler-crown', color: 'error' },
-  auth: { icon: 'tabler-edit', color: 'info' },
+  owner: { icon: 'tabler-edit', color: 'info' },
   user: { icon: 'tabler-user', color: 'primary' }
 }
 

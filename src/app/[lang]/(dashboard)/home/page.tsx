@@ -1,6 +1,6 @@
 // Data Imports
 import DeviceList from '@views/user/device/list'
-import { getOwnDeviceData } from '@/app/server/user/device/actions'
+import { getMobilesStatus, getOwnDeviceData } from '@/app/server/user/device/actions'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -22,8 +22,9 @@ import { getOwnDeviceData } from '@/app/server/user/device/actions'
 const DeviceListApp = async () => {
   // Vars
   const data = await getOwnDeviceData()
+  const deviceStatus: any = await getMobilesStatus()
 
-  return <DeviceList deviceData={data} />
+  return <DeviceList deviceData={data} deviceStatus={deviceStatus} />
 }
 
 export default DeviceListApp

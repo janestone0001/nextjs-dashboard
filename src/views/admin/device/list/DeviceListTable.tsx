@@ -8,7 +8,6 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import TablePagination from '@mui/material/TablePagination'
 import type { TextFieldProps } from '@mui/material/TextField'
@@ -106,7 +105,7 @@ const DebouncedInput = ({
 // Column Definitions
 const columnHelper = createColumnHelper<DeviceTypesWithAction>()
 
-const DeviceListTable = ({ tableData }: { tableData: DeviceTypes[] | any[] }) => {
+const DeviceListTable = ({ tableData, deviceStatus }: { tableData: DeviceTypes[] | any[]; deviceStatus: any }) => {
   // States
   const [addDeviceOpen, setAddDeviceOpen] = useState(false)
   const [selectedDevice, setSelectedDevice] = useState<DeviceTypes | undefined>();
@@ -124,25 +123,31 @@ const DeviceListTable = ({ tableData }: { tableData: DeviceTypes[] | any[] }) =>
     () => [
       {
         id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler()
-            }}
-          />
+        header: () => (
+          <p>Status</p>
         ),
-        cell: ({ row }) => (
-          <Checkbox
-            {...{
-              checked: row.getIsSelected(),
-              disabled: !row.getCanSelect(),
-              indeterminate: row.getIsSomeSelected(),
-              onChange: row.getToggleSelectedHandler()
-            }}
-          />
-        )
+        cell: ({ row }) => {
+          if(deviceStatus.success) {
+            if(deviceStatus && Object.keys(deviceStatus.data).includes(row.original.device)) {
+              if(deviceStatus.data[row.original.device].state) {
+                return ( <div className="flex justify-start
+            items-center"><div className="size-3 rounded bg-green-500"></div>&nbsp;<span className="text-green-500">Online</span></div> )
+              } else {
+                return ( <div className="flex justify-start
+            items-center"><div className="size-3 rounded bg-red-500"></div>&nbsp;<span className="text-red-500">Offline</span></div> )
+              }
+            } else {
+              return ( <div className="flex justify-start
+            items-center"><div className="size-3 rounded bg-red-500"></div>&nbsp;<span className="text-red-500">Offline</span></div> )
+            }
+          } else {
+            return (
+              <div className="flex justify-start items-center">
+                <div className="size-3 rounded bg-white border border-solid border-red-600" />&nbsp;<span className="text-red-500">Error</span>
+              </div>
+            )
+          }
+        }
       },
       columnHelper.accessor('name', {
         header: 'Name',
