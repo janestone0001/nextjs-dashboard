@@ -1,0 +1,15 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migration:generate": "node --loader ts-node/esm ../node_modules/typeorm/cli.js migration:generate -d ./typeorm.config.ts",
+    "migrate": "node --loader ts-node/esm ../node_modules/typeorm/cli.js migration:run -d ./typeorm.config.ts",
+    "migration:revert": "node --loader ts-node/esm ../node_modules/typeorm/cli.js migration:revert -d ./typeorm.config.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
