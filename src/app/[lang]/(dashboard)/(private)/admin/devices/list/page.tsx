@@ -1,6 +1,6 @@
 // Data Imports
-import DeviceList from '@views/user/device/list'
-import { getOwnDeviceData } from '@/app/server/user/device/actions'
+import DeviceList from '@views/admin/device/list'
+import { getDeviceData } from '@/app/server/admin/device/actions'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -19,11 +19,12 @@ import { getOwnDeviceData } from '@/app/server/user/device/actions'
 
   return res.json()
 } */
-const DeviceListApp = async () => {
+
+const UserListApp = async () => {
   // Vars
-  const data = await getOwnDeviceData()
+  const data = await getDeviceData()
 
   return <DeviceList deviceData={data} />
 }
 
-export default DeviceListApp
+export default UserListApp

@@ -97,18 +97,23 @@ const VerticalMenu = ({ dictionary, scrollMenu, role }: Props) => {
         </SubMenu>
         {
           role === "admin" && (
-            <MenuSection label={dictionary['navigation'].adminPanel}>
-              <SubMenu label={dictionary['navigation'].administrator} icon={<i className='tabler-lock' />}>
-                <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].settings}</MenuItem>
-                <MenuItem href={`/${locale}/admin/user/list`}>{dictionary['navigation'].userManagement}</MenuItem>
-                <MenuItem href={`/${locale}/#`}>
-                  {dictionary['navigation'].affiliateSettings}
-                </MenuItem>
-                <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].content}</MenuItem>
-                <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].notification}</MenuItem>
-                <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].logs}</MenuItem>
-              </SubMenu>
-            </MenuSection>
+            <>
+              <MenuSection label={dictionary['navigation'].mamageDevices}>
+                <MenuItem icon={<i className='tabler-devices' /> } href={`/${locale}/admin/devices/list`}>{dictionary['navigation'].manageDevice}</MenuItem>
+              </MenuSection>
+              <MenuSection label={dictionary['navigation'].adminPanel}>
+                <SubMenu label={dictionary['navigation'].administrator} icon={<i className='tabler-lock' />}>
+                  <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].settings}</MenuItem>
+                  <MenuItem href={`/${locale}/admin/user/list`}>{dictionary['navigation'].userManagement}</MenuItem>
+                  <MenuItem href={`/${locale}/#`}>
+                    {dictionary['navigation'].affiliateSettings}
+                  </MenuItem>
+                  <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].content}</MenuItem>
+                  <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].notification}</MenuItem>
+                  <MenuItem href={`/${locale}/#`}>{dictionary['navigation'].logs}</MenuItem>
+                </SubMenu>
+              </MenuSection>
+            </>
           )
         }
       </Menu>

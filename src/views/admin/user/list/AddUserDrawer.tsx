@@ -18,12 +18,17 @@ import { valibotResolver } from '@hookform/resolvers/valibot'
 
 import { email, minLength, object, pipe, string } from 'valibot'
 
+import InputAdornment from '@mui/material/InputAdornment'
+
 import type { UsersType } from '@/types/admin/userTypes'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
+import CustomAutocomplete from '@core/components/mui/Autocomplete'
 
 import { createUserData, updateUserData } from '@/app/server/admin/user/actions'
+import type { DeviceTypes } from '@/types/admin/deviceTypes'
+
 
 type Props = {
   open: boolean
@@ -31,6 +36,7 @@ type Props = {
   userData?: UsersType[]
   setData: (data: UsersType[]) => void
   selectedUser: UsersType | undefined
+  deviceData: DeviceTypes[]
 }
 
 type FormValidateType = {
@@ -38,21 +44,8 @@ type FormValidateType = {
   email: string
   role: string
   isActive: string
-  mobile: string
+  mobile?: string
 }
-
-// type FormNonValidateType = {
-//   company: string
-//   country: string
-//   contact: string
-// }
-
-// Vars
-// const initialData = {
-//   company: '',
-//   country: '',
-//   contact: ''
-// }
 
 type ErrorType = {
   message: string[]
@@ -63,16 +56,16 @@ const schema = object({
   username: pipe(string(), minLength(1, 'This field is required')),
   role: pipe(string(), minLength(1, 'This field is required')),
   isActive: pipe(string(), minLength(1, 'This field is required')),
-  mobile: pipe(string(), minLength(1, 'This field is required'))
 })
 
 const AddUserDrawer = (props: Props) => {
   // Props
-  const { open, handleClose, userData, setData, selectedUser } = props
+  const { open, handleClose, userData, setData, selectedUser, deviceData } = props
   const [errorState, setErrorState] = useState<ErrorType | null>(null)
+  const [mobile, setMobile] = useState<any>([]);
 
-  // States
-  // const [formData, setFormData] = useState<FormNonValidateType>(initialData)
+  //State
+  const [password, setPassword] = useState<string>("")
 
   // Hooks
   const {
@@ -101,33 +94,55 @@ const AddUserDrawer = (props: Props) => {
     });
   }, [selectedUser, resetForm])
 
+  useEffect(() => {
+    if(selectedUser && selectedUser.mobile) {
+      const selectedMobiles = JSON.parse(selectedUser?.mobile);
+
+      if(selectedMobiles.length) {
+        setMobile(deviceData.filter((option: DeviceTypes) => {
+          if(selectedMobiles.includes(option.id)) {
+            return {
+              id: option.id,
+              name: option.name
+            }
+          }
+        }))
+      }
+    }
+  }, [selectedUser])
+
   const onSubmit = async (data: FormValidateType) => {
     const newUser: UsersType = {
       name: data.username,
       email: data.email,
+      password,
       role: data.role,
       isActive: data.isActive,
-      mobile: data.mobile
+      mobile: JSON.stringify(mobile.map((m: any) => m.id))
     }
 
     if(!selectedUser) {
-      await createUserData(newUser)
-        .then((res: any) => {
+      if(!newUser.password) {
+        setErrorState({ message: ["Please generate new password!"] })
+      } else {
+        await createUserData(newUser)
+          .then((res: any) => {
 
-          if(res.success) {
-            setData([...(userData ?? []), newUser])
+            if(res.success) {
+              setData([...(userData ?? []), newUser])
 
-            handleClose()
+              handleClose()
 
-            // setFormData(initialData)
+              // setFormData(initialData)
 
-            resetForm({ username: '', email: '', role: '', isActive: '' })
-          }
-        }).catch(err => {
-          const errMessage = JSON.parse(err.message);
+              resetForm({ username: '', email: '', role: '', isActive: '' })
+            }
+          }).catch(err => {
+            const errMessage = JSON.parse(err.message);
 
-          setErrorState(errMessage)
-        });
+            setErrorState(errMessage)
+          });
+      }
     } else {
       await updateUserData(newUser, selectedUser.id as number)
         .then((res: any) => {
@@ -145,6 +160,14 @@ const AddUserDrawer = (props: Props) => {
     }
 
   }
+
+  const generatePassword = (length = 6) => {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+
+    return Array.from(crypto.getRandomValues(new Uint32Array(length)))
+      .map((x) => charset[x % charset.length])
+      .join("");
+  };
 
   const handleReset = () => {
     handleClose()
@@ -200,12 +223,40 @@ const AddUserDrawer = (props: Props) => {
                   field.onChange(e.target.value)
                   errorState !== null && setErrorState(null)
                 }}
-                {...((errors.email || errorState !== null) && {
+                {...((errors.email) && {
                   error: true,
-                  helperText: errors?.email?.message || errorState?.message[0]
+                  helperText: errors?.email?.message
                 })}
               />
             )}
+          />
+          <CustomTextField
+            fullWidth
+            label='Password'
+            placeholder='Generate Password'
+            id='login-password'
+            type='text'
+            disabled
+            value={password}
+            {...((errorState !== null) && {
+              error: true,
+              helperText: errorState?.message[0]
+            })}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      edge='end'
+                      onClick={() => setPassword(generatePassword(6))}
+                      onMouseDown={e => e.preventDefault()}
+                    >
+                      <i className={'tabler-refresh'} />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
+            }}
           />
           <Controller
             name='role'
@@ -248,13 +299,20 @@ const AddUserDrawer = (props: Props) => {
             name='mobile'
             control={control}
             rules={{ required: true }}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                label='Mobile'
-                fullWidth
-                placeholder='(397) 294-5153'
-                {...(errors.mobile && { error: true, helperText: 'This field is required.' })}
+            render={() => (
+              <CustomAutocomplete
+                multiple
+                value={mobile}
+                options={deviceData?.map((option: DeviceTypes) => ({
+                    id: option.id,
+                    name: option.name
+                }))}
+                id='autocomplete-limit-tags'
+                getOptionLabel={option => option.name || ''}
+                onChange={(e, value) => setMobile(value)}
+                renderInput={params => (
+                  <CustomTextField {...params} label='Mobiles' placeholder='Choose mobile' />
+                )}
               />
             )}
           />

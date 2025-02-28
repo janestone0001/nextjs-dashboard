@@ -66,33 +66,50 @@ export const createUserData = async (newUser: UsersType) => {
     throw new Error(response)
   }
 
-  return new Promise((resolve, reject) => {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.mobile as string, salt, async (err, hash) => {
+  return new Promise(async (resolve, reject) => {
+    if(newUser?.password) {
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password as string, salt, async (err, hash) => {
 
-        if (err) {
-          reject(JSON.stringify(err))
-        }
+          if (err) {
+            reject(JSON.stringify(err))
+          }
 
-        try {
-          await userRepository.save({
-            name: newUser?.name,
-            password: hash,
-            email: newUser?.email,
-            role: newUser?.role,
-            isActive: newUser?.isActive,
-            mobile: newUser?.mobile
-          })
+          try {
+            await userRepository.save({
+              name: newUser?.name,
+              password: hash,
+              email: newUser?.email,
+              role: newUser?.role,
+              isActive: newUser?.isActive,
+              mobile: newUser?.mobile
+            })
 
-          resolve({
-            success: true,
-          })
-        } catch (e: any) {
-          reject(e.message)
-        }
+            resolve({
+              success: true,
+            })
+          } catch (e: any) {
+            reject(e.message)
+          }
+        })
       })
+    } else {
+      try {
+        await userRepository.save({
+          name: newUser?.name,
+          email: newUser?.email,
+          role: newUser?.role,
+          isActive: newUser?.isActive,
+          mobile: newUser?.mobile
+        })
 
-    })
+        resolve({
+          success: true,
+        })
+      } catch (e: any) {
+        reject(e.message)
+      }
+    }
   })
 }
 
@@ -109,29 +126,42 @@ export const updateUserData = async (newUser: UsersType, id: number) => {
 
   const userRepository = AppDataSource.getRepository(User)
 
-  return new Promise((resolve, reject) => {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.mobile as string, salt, async (err, hash) => {
+  return new Promise(async (resolve, reject) => {
+    if(newUser?.password) {
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password as string, salt, async (err, hash) => {
 
-        if (err) {
-          reject(JSON.stringify(err))
-        }
+          if (err) {
+            reject(JSON.stringify(err))
+          }
 
-        try {
-          await userRepository.update(id, {
-            ...newUser,
-            password: hash
-          });
+          try {
+            await userRepository.update(id, {
+              ...newUser,
+              password: hash
+            });
 
-          resolve({
-            success: true,
-          })
-        } catch (e: any) {
-          reject(e.message)
-        }
+            resolve({
+              success: true,
+            })
+          } catch (e: any) {
+            reject(e.message)
+          }
+        })
       })
+    } else {
+      try {
+        await userRepository.update(id, {
+          ...newUser,
+        });
 
-    })
+        resolve({
+          success: true,
+        })
+      } catch (e: any) {
+        reject(e.message)
+      }
+    }
   })
 }
 
@@ -157,6 +187,4 @@ export const removeUserData = async (id: number) => {
   } catch(e: any) {
     throw new Error(e.message)
   }
-
-
 }

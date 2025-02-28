@@ -3,6 +3,7 @@ import UserList from '@views/admin/user/list'
 
 // Data Imports
 import { getUserData } from '@/app/server/admin/user/actions'
+import { getDeviceData } from '@/app/server/admin/device/actions'
 
 /**
  * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
@@ -25,8 +26,9 @@ import { getUserData } from '@/app/server/admin/user/actions'
 const UserListApp = async () => {
   // Vars
   const data = await getUserData()
+  const deviceData = await getDeviceData()
 
-  return <UserList userData={data} />
+  return <UserList userData={data} deviceData={deviceData} />
 }
 
 export default UserListApp

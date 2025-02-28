@@ -8,10 +8,8 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
 import TablePagination from '@mui/material/TablePagination'
 import type { TextFieldProps } from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
@@ -39,25 +37,15 @@ import {
 import type { ColumnDef, FilterFn } from '@tanstack/react-table'
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
-// Type Imports
-import type { ThemeColor } from '@core/types'
-import type { UsersType } from '@/types/admin/userTypes'
-
-// Component Imports
-import TableFilters from './TableFilters'
-import AddUserDrawer from './AddUserDrawer'
+import AddDeviceDrawer from './AddDeviceDrawer'
 
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
-import CustomAvatar from '@core/components/mui/Avatar'
-
-// Util Imports
-import { getInitials } from '@/utils/getInitials'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
-import { removeUserData } from '@/app/server/admin/user/actions'
 import type { DeviceTypes } from '@/types/admin/deviceTypes'
+import { removeDeviceData } from '@/app/server/admin/device/actions'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -68,20 +56,10 @@ declare module '@tanstack/table-core' {
   }
 }
 
-type UsersTypeWithAction = UsersType & {
+type DeviceTypesWithAction = DeviceTypes & {
   action?: string
 }
 
-type UserRoleType = {
-  [key: string]: { icon: string; color: string }
-}
-
-type UserStatusType = {
-  [key: string]: ThemeColor
-}
-
-// Styled Components
-const Icon = styled('i')({})
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -125,38 +103,24 @@ const DebouncedInput = ({
   return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
 }
 
-// Vars
-const userRoleObj: UserRoleType = {
-  admin: { icon: 'tabler-crown', color: 'error' },
-  auth: { icon: 'tabler-edit', color: 'info' },
-  user: { icon: 'tabler-user', color: 'primary' }
-}
-
-const userStatusObj: UserStatusType = {
-  active: 'success',
-  inactive: 'secondary'
-}
-
 // Column Definitions
-const columnHelper = createColumnHelper<UsersTypeWithAction>()
+const columnHelper = createColumnHelper<DeviceTypesWithAction>()
 
-const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; deviceData: DeviceTypes[] }) => {
+const DeviceListTable = ({ tableData }: { tableData: DeviceTypes[] | any[] }) => {
   // States
-  const [addUserOpen, setAddUserOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<UsersType | undefined>();
+  const [addDeviceOpen, setAddDeviceOpen] = useState(false)
+  const [selectedDevice, setSelectedDevice] = useState<DeviceTypes | undefined>();
   const [selectedId, setSelectedId] = useState<number>();
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState(...[tableData])
-  const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
   const [open, setOpen] = useState<boolean>(false)
 
   useEffect(() => {
-    console.log(selectedUser);
-    if(selectedUser) setAddUserOpen(true)
-  }, [selectedUser])
+    if(selectedDevice) setAddDeviceOpen(true)
+  }, [selectedDevice])
 
-  const columns = useMemo<ColumnDef<UsersTypeWithAction, any>[]>(
+  const columns = useMemo<ColumnDef<DeviceTypesWithAction, any>[]>(
     () => [
       {
         id: 'select',
@@ -181,44 +145,38 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
         )
       },
       columnHelper.accessor('name', {
-        header: 'User',
+        header: 'Name',
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
-            {getAvatar({ name: row.original.name })}
             <div className='flex flex-col'>
               <Typography color='text.primary' className='font-medium'>
                 {row.original.name}
               </Typography>
-              <Typography variant='body2'>{row.original.name}</Typography>
             </div>
           </div>
         )
       }),
-      columnHelper.accessor('role', {
-        header: 'Role',
+      columnHelper.accessor('name', {
+        header: 'Device',
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            <Icon
-              className={userRoleObj[row.original.role].icon}
-              sx={{ color: `var(--mui-palette-${userRoleObj[row.original.role].color}-main)` }}
-            />
-            <Typography className='capitalize' color='text.primary'>
-              {row.original.role}
-            </Typography>
+          <div className='flex items-center gap-4'>
+            <div className='flex flex-col'>
+              <Typography color='text.primary' className='font-medium'>
+                {row.original.device}
+              </Typography>
+            </div>
           </div>
         )
       }),
-      columnHelper.accessor('isActive', {
-        header: 'Status',
+      columnHelper.accessor('name', {
+        header: 'Note',
         cell: ({ row }) => (
-          <div className='flex items-center gap-3'>
-            <Chip
-              variant='tonal'
-              label={row.original.isActive}
-              size='small'
-              color={userStatusObj[row.original.isActive]}
-              className='capitalize'
-            />
+          <div className='flex items-center gap-4'>
+            <div className='flex flex-col'>
+              <Typography color='text.primary' className='font-medium'>
+                {row.original.note}
+              </Typography>
+            </div>
           </div>
         )
       }),
@@ -232,7 +190,7 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
             }}>
               <i className='tabler-trash text-textSecondary' />
             </IconButton>
-            <IconButton onClick={() => setSelectedUser(data?.filter((product: UsersType) => product.id === row.original.id)[0])}>
+            <IconButton onClick={() => setSelectedDevice(data?.filter((product: DeviceTypes) => product.id === row.original.id)[0])}>
               <i className='tabler-edit text-textSecondary' />
             </IconButton>
           </div>
@@ -241,11 +199,11 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, filteredData]
+    [data]
   )
 
   const table = useReactTable({
-    data: filteredData as UsersType[],
+    data: data as DeviceTypes[],
     columns,
     filterFns: {
       fuzzy: fuzzyFilter
@@ -273,18 +231,6 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
 
-  const getAvatar = (params: Pick<UsersType, 'name'>) => {
-    const { name } = params
-
-    return <CustomAvatar size={34}>{getInitials(name as string)}</CustomAvatar>
-
-    // if (avatar) {
-    //   return <CustomAvatar src={avatar} size={34} />
-    // } else {
-    //   return <CustomAvatar size={34}>{getInitials(fullName as string)}</CustomAvatar>
-    // }
-  }
-
   const handleClose = () => {
     setOpen(false)
     setSelectedId(undefined)
@@ -292,7 +238,7 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
 
   const handleDelete = (id: number | undefined) => {
     if(id) {
-      removeUserData(id)
+      removeDeviceData(id)
         .then((res: any) => {
 
           if(res.success) {
@@ -310,7 +256,6 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <TableFilters setData={setFilteredData} tableData={data} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -340,20 +285,20 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              onClick={() => setAddUserOpen(!addUserOpen)}
+              onClick={() => setAddDeviceOpen(!addDeviceOpen)}
               className='max-sm:is-full'
             >
-              Add New User
+              Add New Device
             </Button>
           </div>
         </div>
         <div className='overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th key={header.id}>
+              {table.getHeaderGroups().map((headerGroup, header_group_index) => (
+                <tr key={header_group_index}>
+                  {headerGroup.headers.map((header, header_index) => (
+                    <th key={header_index}>
                       {header.isPlaceholder ? null : (
                         <>
                           <div
@@ -389,11 +334,11 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
                 {table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
-                  .map(row => {
+                  .map((row, row_index) => {
                     return (
-                      <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-                        {row.getVisibleCells().map(cell => (
-                          <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                      <tr key={row_index} className={classnames({ selected: row.getIsSelected() })}>
+                        {row.getVisibleCells().map((cell, cell_index) => (
+                          <td key={cell_index}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                         ))}
                       </tr>
                     )
@@ -412,27 +357,26 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
           }}
         />
       </Card>
-      <AddUserDrawer
-        open={addUserOpen}
+      <AddDeviceDrawer
+        open={addDeviceOpen}
         handleClose={() => {
-          setAddUserOpen(!addUserOpen)
-          setSelectedUser(undefined)
+          setAddDeviceOpen(!addDeviceOpen)
+          setSelectedDevice(undefined)
         }}
-        userData={data}
+        deviceData={data}
         setData={setData}
-        deviceData={deviceData}
-        selectedUser={selectedUser}
+        selectedDevice={selectedDevice}
       />
       <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby='alert-device-dialog-title'
+        aria-describedby='alert-device-dialog-description'
         closeAfterTransition={false}
       >
-        <DialogTitle id='alert-dialog-title'>Delete User</DialogTitle>
+        <DialogTitle id='alert-device-dialog-title'>Delete User</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
+          <DialogContentText id='alert-device-dialog-description'>
             Do you really remove this user?
           </DialogContentText>
         </DialogContent>
@@ -445,4 +389,4 @@ const UserListTable = ({ tableData, deviceData }: { tableData?: UsersType[]; dev
   )
 }
 
-export default UserListTable
+export default DeviceListTable

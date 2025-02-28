@@ -5,6 +5,8 @@ import styled from '@emotion/styled'
 import classnames from 'classnames'
 
 // Type Imports
+import { useSession } from 'next-auth/react'
+
 import type { getDictionary } from '@/utils/getDictionary'
 
 // Component Imports
@@ -19,7 +21,6 @@ import useHorizontalNav from '@menu/hooks/useHorizontalNav'
 
 // Util Imports
 import { horizontalLayoutClasses } from '@layouts/utils/layoutClasses'
-import { useSession } from 'next-auth/react'
 
 type StyledDivProps = {
   isContentCompact: boolean
