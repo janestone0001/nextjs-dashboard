@@ -7,6 +7,8 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
+import { useSession } from 'next-auth/react'
+
 // MUI Imports
 import { styled, useColorScheme, useTheme } from '@mui/material/styles'
 
@@ -56,6 +58,9 @@ const StyledBoxForShadow = styled('div')(({ theme }) => ({
 const Navigation = (props: Props) => {
   // Props
   const { dictionary, mode } = props
+
+  //session
+  const { data: session } = useSession();
 
   // Hooks
   const verticalNavOptions = useVerticalNav()
@@ -129,7 +134,7 @@ const Navigation = (props: Props) => {
         )}
       </NavHeader>
       <StyledBoxForShadow ref={shadowRef} />
-      <VerticalMenu dictionary={dictionary} scrollMenu={scrollMenu} />
+      <VerticalMenu role={session?.user?.role} dictionary={dictionary} scrollMenu={scrollMenu} />
     </VerticalNav>
   )
 }

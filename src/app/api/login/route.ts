@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 import { compare } from "bcrypt"
 
 import { User } from '@db/entities/user.entity'
+
 import { AppDataSource } from '@/db/data-source'
+
 
 export async function POST(req: Request) {
   if (!AppDataSource.isInitialized) {
@@ -46,7 +48,7 @@ export async function POST(req: Request) {
     )
   }
 
-  if(!user.isActive) {
+  if(user.isActive === 'inactive') {
     return NextResponse.json(
       {
         // We create object here to separate each error message for each field in case of multiple errors

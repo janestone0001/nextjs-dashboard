@@ -1,3 +1,5 @@
+"use client"
+
 // Third-party Imports
 import styled from '@emotion/styled'
 import classnames from 'classnames'
@@ -17,6 +19,7 @@ import useHorizontalNav from '@menu/hooks/useHorizontalNav'
 
 // Util Imports
 import { horizontalLayoutClasses } from '@layouts/utils/layoutClasses'
+import { useSession } from 'next-auth/react'
 
 type StyledDivProps = {
   isContentCompact: boolean
@@ -43,6 +46,7 @@ const Navigation = ({ dictionary }: { dictionary: Awaited<ReturnType<typeof getD
   // Hooks
   const { settings } = useSettings()
   const { isBreakpointReached } = useHorizontalNav()
+  const { data: session } = useSession();
 
   // Vars
   const headerContentCompact = settings.navbarContentWidth === 'compact'
@@ -60,7 +64,7 @@ const Navigation = ({ dictionary }: { dictionary: Awaited<ReturnType<typeof getD
           className: classnames(horizontalLayoutClasses.navigationContentWrapper, 'flex items-center is-full plb-2')
         })}
       >
-        <HorizontalMenu dictionary={dictionary} />
+        <HorizontalMenu role={session?.user?.role} dictionary={dictionary} />
       </StyledDiv>
     </div>
   )

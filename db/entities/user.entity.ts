@@ -6,6 +6,11 @@ export enum UserRole {
   USER = "user",
 }
 
+export enum UserStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}
+
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
@@ -21,10 +26,11 @@ export class User {
   password!: string
 
   @Column({
-    type: 'boolean',
-    default: true,
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.ACTIVE,
   })
-  isActive!: boolean;
+  isActive!: string;
 
   @Column({
     type: 'enum',
@@ -32,6 +38,9 @@ export class User {
     default: UserRole.USER
   })
   role!: string;
+
+  @Column()
+  mobile!: string
 
   @CreateDateColumn()
   createdAt!: Date
