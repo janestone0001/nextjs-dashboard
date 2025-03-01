@@ -1,0 +1,79 @@
+h1 {
+  text-align: center;
+  color: #333;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+.panel {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  inline-size: 48%;
+}
+.panel h2 {
+  margin-block-start: 0;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#textInput {
+  border-width: 1px;
+}
+button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  border-radius: 3px;
+}
+button:hover {
+  background-color: #e0e0e0;
+}
+textarea {
+  inline-size: 100%;
+  block-size: 60px;
+  margin-block-start: 10px;
+  padding: 5px;
+}
+/* Limit remote screen width and disable default pointer actions */
+#remoteScreen {
+  inline-size: 480px;
+  max-inline-size: 100%;
+  border: 1px solid #ccc;
+  display: block;
+  cursor: pointer;
+  margin-block: 0;
+  margin-inline: auto;
+  touch-action: none;
+  user-select: none;
+}
+.log {
+  background-color: #e0e0e0;
+  padding: 10px;
+  margin-block-start: 20px;
+  block-size: 150px;
+  overflow-y: auto;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 12px;
+  display: none;
+}
+#refreshTime {
+  inline-size: 80px;
+  padding: 4px;
+  margin-block-end: 10px;
+}
+#toggleConsole {
+  margin-block-end: 20px;
+}
+/* Mensaje de estado de dispositivo (ej: offline) */
+#deviceStatus {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}

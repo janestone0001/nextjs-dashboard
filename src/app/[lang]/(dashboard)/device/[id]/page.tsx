@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { isOwnDevice } from '@/app/server/user/device/actions'
+import { Device } from '@views/user/device/device'
 
 
 const Page = async ({ params }: {params: Promise<{id: number}>}) => {
@@ -10,7 +11,7 @@ const Page = async ({ params }: {params: Promise<{id: number}>}) => {
 
   if(!device) redirect('/pages/misc/401-not-authorized')
 
-  return <div>Device Page</div>
+  return <Device device={device} />
 }
 
 export default Page
