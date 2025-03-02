@@ -128,7 +128,7 @@ const DeviceListTable = ({ tableData, deviceStatus }: { tableData: DeviceTypes[]
             }
           } else {
             return ( <div className="flex justify-start
-            items-center"><div className="size-3 rounded bg-white border border-solid border-red-600"></div>&nbsp;<span className="text-red-500">Error</span></div> )
+            items-center"><div className="size-3 rounded border border-solid border-red-600"></div>&nbsp;<span className="text-red-500">Error</span></div> )
           }
         }
       },

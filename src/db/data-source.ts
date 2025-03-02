@@ -5,6 +5,7 @@ import { DataSource } from "typeorm"
 
 import { User } from '@db/entities/user.entity'
 import { Device } from '@db/entities/device.entity'
+import { Settings } from '@db/entities/settings.entity'
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -14,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || "root",
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "freelance",
-  entities: [User, Device],
+  entities: [User, Device, Settings],
   migrations: [path.join(process.cwd(), "./migrations/**/*.{js,ts}")],
   synchronize: process.env.NODE_ENV !== "production", // Set to false in production
   logging: process.env.NODE_ENV !== "production",

@@ -12,6 +12,7 @@ import { User } from '@db/entities/user.entity'
 
 import { authOptions } from '@/libs/auth'
 import type { DeviceTypes } from '@/types/admin/deviceTypes'
+import { getEndpointSettings } from '@/app/server/admin/settings/actions'
 
 export const isOwnDevice = async (id: number) => {
   const devices = await getOwnDeviceData()
@@ -52,12 +53,14 @@ export const getOwnDeviceData = async () => {
 }
 
 export const getMobilesStatus = async () => {
+  const mobileEndpoint: any = await getEndpointSettings()
+
   try {
     const controller = new AbortController();
 
     const timeoutId = setTimeout(() => controller.abort(), 3000); // 5 seconds timeout
 
-    const res = await fetch("http://188.26.201.61:9912/api", {
+    const res = await fetch(`http://${mobileEndpoint?.endpoint}:9991/api`, {
       method: 'POST',
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

@@ -2,15 +2,22 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+// eslint-disable-next-line import/order
 import type { DeviceTypes } from '@/types/admin/deviceTypes'
 
 import '../../../../public/css/device.css';
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+
+import MenuItem from '@mui/material/MenuItem'
+
+import CustomTextField from '@core/components/mui/TextField'
 
 const wsUrl = "ws://188.26.201.61:9911/clinet";
 const DRAG_THRESHOLD = 5; // px
 
 export const Device = ({ device } : {device: DeviceTypes}) => {
-  const [refreshTime, setRefreshTime] = useState<string>();
+  const [refreshTime, setRefreshTime] = useState<string>('10');
 
   // state
   const [forcedDeviceId] = useState<string>(device.device)
@@ -47,7 +54,6 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
   useEffect(() => {
     // Handler for keydown event
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log(111)
       if (document.activeElement === document.getElementById("textInput")) return;
       e.preventDefault();
       sendControlCommand("key_down", { key: e.key });
@@ -154,11 +160,9 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
 
       tempImg.onload = function() {
         if(remoteScreenRef.current) {
-          if (typeof dataUrl === 'string') {
-            (remoteScreenRef.current as HTMLImageElement).src = dataUrl
-          }
-
-          (remoteScreenRef.current as HTMLImageElement).style.display = "block";
+          // @ts-ignore
+          remoteScreenRef.current.src = dataUrl
+          remoteScreenRef.current.style.display = "block";
         }
 
         setIsImageUpdating(false)
@@ -311,7 +315,7 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
                 wsCapture.send(JSON.stringify({
                   fun: "register",
                   msgid: 0,
-                  data: { deviceid: deviceId }
+                  data: { deviceid: forcedDeviceId }
                 }));
 
                 // @ts-ignore
@@ -319,7 +323,7 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
                   fun: "loop_device_screenshot",
                   msgid: 0,
                   data: {
-                    deviceid: deviceId,
+                    deviceid: forcedDeviceId,
                     time: getRefreshInterval(),
                     isjpg: true
                   }
@@ -354,13 +358,14 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
     };
 
     wsControl.onerror = (error) => {
+      showDeviceOffline("Server Error")
       log("wsControl - Error: " + error);
     };
   }
 
   // Función para mostrar "Device offline"
-  const showDeviceOffline = () => {
-    if(deviceStatusRef.current) deviceStatusRef.current.textContent = "Device offline"
+  const showDeviceOffline = (msg: string = "Device offline") => {
+    if(deviceStatusRef.current) deviceStatusRef.current.textContent = msg
     if(remoteScreenRef.current) remoteScreenRef.current.style.display = "none"
   }
 
@@ -584,41 +589,48 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
 
   return (
     <div>
-      <h1>Control Panel</h1>
+      <h1 className="text-center">Control Panel</h1>
 
-      <button id="toggleConsole" onClick={() => handleClickToggleConsole()}>Show Console</button>
+      <Button variant="contained" id="toggleConsole" onClick={() => handleClickToggleConsole()}>Show Console</Button>
 
-      <div className="container">
-        <div className="panel">
+      <div className="container mt-3">
+        <Card className="panel">
           <h2>Text Input</h2>
-          <textarea id="textInput" placeholder="Enter text..."></textarea>
-          <button id="sendText" onClick={handleClickSendText}>Send</button>
+          <CustomTextField
+            id="textInput"
+            placeholder="Enter text..."
+            rows={3}
+            multiline
+            fullWidth
+          />
+          <Button variant="contained" id="sendText" className="mt-3" onClick={handleClickSendText}>Send</Button>
 
-          <h2>Controller</h2>
+          <h2 className="mt-3">Controller</h2>
           <div className="controls">
-            <button id="btnUp" onClick={() => handleClickBtnUp()}>⬆️</button>
-            <button id="btnLeft" onClick={() => handleClickBtnLeft()}>⬅️</button>
-            <button id="btnRight" onClick={() => handleClickBtnRight()}>➡️</button>
-            <button id="btnDown" onClick={() => handleClickBtnDown()}>⬇️</button>
-            <button id="btnHome" onClick={() => handleClickBtnHome()}>🏠 Home</button>
-            <button id="btnLock" onClick={() => handleClickBtnLock()}>🔒 Lock</button>
-            <button id="btnMouseReset" onClick={() => handleClickBtnMouseReset()}>Reset Mouse</button>
-            <button id="btnRestartCellphone" onClick={() => handleClickBtnRestartCellphone()}>Restart Cellphone</button>
+            <Button size="small" variant="contained" id="btnUp" onClick={() => handleClickBtnUp()}>⬆️</Button>
+            <Button variant="contained" id="btnLeft" onClick={() => handleClickBtnLeft()}>⬅️</Button>
+            <Button variant="contained" id="btnRight" onClick={() => handleClickBtnRight()}>➡️</Button>
+            <Button variant="contained" id="btnDown" onClick={() => handleClickBtnDown()}>⬇️</Button>
+            <Button variant="contained" id="btnHome" onClick={() => handleClickBtnHome()}>🏠 Home</Button>
+            <Button variant="contained" id="btnLock" onClick={() => handleClickBtnLock()}>🔒 Lock</Button>
+            <Button variant="contained" id="btnMouseReset" onClick={() => handleClickBtnMouseReset()}>Reset Mouse</Button>
+            <Button variant="contained" id="btnRestartCellphone" onClick={() => handleClickBtnRestartCellphone()}>Restart Cellphone</Button>
           </div>
-        </div>
+        </Card>
 
-        <div className="panel">
+        <Card className="panel">
           <h2>Remote Screen</h2>
           <div id="deviceStatus" ref={deviceStatusRef}></div>
-
-          <label htmlFor="refreshTime">Refresh Interval (ms):</label>
-          <select id="refreshTime" onChange={handleChangeRefreshTime}>
-            <option value="10">10</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-          </select>
+          <div className="flex items-center">
+            <label htmlFor="refreshTime">Refresh Interval (ms):</label>
+            <CustomTextField size="small" select value={refreshTime} className="m-r-3" id="refreshTime" onChange={handleChangeRefreshTime}>
+              <MenuItem value={'10'}>10</MenuItem>
+              <MenuItem value={'50'}>50</MenuItem>
+              <MenuItem value={'100'}>100</MenuItem>
+              <MenuItem value={'500'}>500</MenuItem>
+              <MenuItem value={'1000'}>1000</MenuItem>
+            </CustomTextField>
+          </div>
           <img
             id="remoteScreen"
             ref={remoteScreenRef}
@@ -631,16 +643,16 @@ export const Device = ({ device } : {device: DeviceTypes}) => {
             onPointerUp={handlePointerUp}
             onWheel={handleWheel}
           />
-        </div>
+        </Card>
       </div>
 
-      <div className="log" id="log" ref={logRef}>
+      <Card className="log" id="log" ref={logRef}>
         {
           message?.length && message.map((msg, index) => (
             <p key={index}>{msg}</p>
           ))
         }
-      </div>
+      </Card>
     </div>
   )
 }
